@@ -53,7 +53,7 @@ def change_permissions():
         print "Created user: admin"
         subprocess.call(["chown -R admin:admin " + BASE_DIR], shell=True)
         subprocess.call(["chown ftp:admin " + FULL_DIR + "ftp"], shell=True)
-        print "Changed permissions"
+        print "Set correct permissions"
     except:
         print "Something went wrong"
         sys.exit(1)
@@ -64,7 +64,7 @@ def make_files():
     for line in VHOST:
         conf.write(line + "\n")
     conf.close()
-    print "Created %s in %s\n" % (conf.name, APACHE_VHOST_DIR)
+    print "Created %s\n" % (conf.name)
     index = open(FULL_DIR + 'http/' + 'index.html', 'w')
     index.write("Hello World!")
     index.close()
