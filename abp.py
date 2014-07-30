@@ -66,7 +66,7 @@ def make_files():
     conf.close()
     print "Created %s\n" % (conf.name)
     index = open(FULL_DIR + 'http/' + 'index.html', 'w')
-    index.write("Hello World!")
+    index.write("Hello World from " + DOMAIN)
     index.close()
 
 
