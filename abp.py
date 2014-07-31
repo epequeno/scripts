@@ -30,7 +30,7 @@ VHOST = ["<VirtualHost *:80>",
          "  CustomLog " + FULL_DIR + "logs/access-log common",
          "</VirtualHost>"]
 goodbye_msg = ["Configuration complete!",
-               "Please start httpd, chkconfig it on and open port 80!"]
+               "Please open port 80!"]
 
 
 def test_exists():
