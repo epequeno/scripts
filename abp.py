@@ -11,6 +11,7 @@ Apache best practices script
 import os
 import sys
 import subprocess
+import urllib
 
 DOMAIN = raw_input("Enter domain [example.com]: ")
 
@@ -29,8 +30,9 @@ VHOST = ["<VirtualHost *:80>",
          "  ErrorLog " + FULL_DIR + "logs/error-log",
          "  CustomLog " + FULL_DIR + "logs/access-log common",
          "</VirtualHost>"]
-goodbye_msg = ["Configuration complete!",
-               "Please open port 80!"]
+REQUEST = urllib.urlopen("https://raw.githubusercontent.com/h5bp/html5-boilerplate/master/index.html")
+HTML5_BOILERPLATE = REQUEST.read()
+LOG = open("abp.log", 'w')
 
 
 def test_exists():
@@ -38,19 +40,19 @@ def test_exists():
     that already has some directory set up'''
 
     if os.access("/var/www/vhosts/" + DOMAIN, os.F_OK):
-        print "Directory exists, exiting."
+        print "Directory %s exists, exiting." % (FULL_DIR)
         sys.exit(1)
 
 
 def install_apache():
-    subprocess.call(["yum", "install", "httpd", "-y"])
+    subprocess.call(["yum install httpd -y >> abp.log"], shell=True)
     subprocess.call(["chkconfig httpd on"], shell=True)
-    print "Installed Apache."
+    LOG.write("Installed Apache\n")
 
 
 def make_base_dir():
-    subprocess.call(["mkdir", "-p", FULL_DIR])
-    print "Created directory %s" % (FULL_DIR)
+    subprocess.call(["mkdir -p " + FULL_DIR], shell=True)
+    LOG.write("Created directory %s \n" % (FULL_DIR))
 
 
 def make_structure():
@@ -59,18 +61,18 @@ def make_structure():
     os.chdir(FULL_DIR)
     for directory in STRUCTURE:
         subprocess.call(["mkdir", directory])
-    print "Made default directories (%s) in %s" % (STRUCTURE, FULL_DIR)
+    LOG.write("Made default directories (%s) in %s \n" % (STRUCTURE, FULL_DIR))
 
 
 def change_permissions():
     try:
-        subprocess.call(["useradd", "admin"])
-        print "Created user: admin"
+        subprocess.call(["useradd admin"], shell=True)
+        LOG.write("Created user: admin \n")
         subprocess.call(["chown -R admin:admin " + BASE_DIR], shell=True)
         subprocess.call(["chown ftp:admin " + FULL_DIR + "ftp"], shell=True)
-        print "Set correct permissions"
+        LOG.write("Set permissions \n")
     except:
-        print "Something went wrong"
+        print "Something went wrong while setting permissions"
         sys.exit(1)
 
 
@@ -82,24 +84,39 @@ def make_conf_file():
     for line in VHOST:
         conf.write(line + "\n")
     conf.close()
-    print "Created %s" % (conf.name)
+    LOG.write("Created %s \n" % (conf.name))
 
 
 def make_index_file():
-    '''Make a simple index.html file'''
+    '''Make an index.html file. Try to use the latest HTML5 boilerplate
+    and will failover to simple text.'''
 
     index = open(FULL_DIR + 'http/' + 'index.html', 'w')
-    index.write("Hello World from " + DOMAIN)
+    if REQUEST.code == 200:
+        tmp = HTML5_BOILERPLATE.replace("<title></title>",
+                                        "<title>Basic Test Page</title>")
+        tmp = tmp.replace("This is HTML5 Boilerplate.", "From " + DOMAIN)
+        index.write(tmp)
+    else:
+        index.write("Hello World from " + DOMAIN)
     index.close()
-    print "Created %s" % (index.name)
+    LOG.write("Created %s \n" % (index.name))
 
 
 def start_apache():
-    subprocess.call(["service httpd start"], shell=True)
-    print "Starting Apache..."
+    subprocess.call(["service httpd start >> abp.log 2>&1"], shell=True)
+    LOG.write("Apache started \n")
+
+
+def open_port_80():
+    subprocess.call(["iptables -I INPUT -m conntrack --ctstate NEW -m tcp -p tcp --dport 80 -j ACCEPT"], shell=True)
+    subprocess.call(["service iptables save >> abp.log"], shell=True)
+    subprocess.call(["service iptables restart >> abp.log"], shell=True)
+    LOG.write("Opened port 80\n")
 
 
 def main():
+    print "Working, please wait (~2m)...\n"
     test_exists()
     install_apache()
     make_base_dir()
@@ -108,9 +125,8 @@ def main():
     make_conf_file()
     make_index_file()
     start_apache()
-    print "\n"
-    for line in goodbye_msg:
-        print line
+    open_port_80()
+    print "Done. See abp.log for details."
 
 if __name__ == '__main__':
     main()
