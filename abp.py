@@ -126,6 +126,7 @@ def main():
     make_index_file()
     start_apache()
     open_port_80()
+    LOG.close()
     print "Done. See abp.log for details."
 
 if __name__ == '__main__':
