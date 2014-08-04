@@ -55,8 +55,8 @@ def install_apache():
 
 def config_apache():
     if PORT != "80":
-        subprocess.call(["echo Listen " + PORT + " >> " + APACHE_CONF])
-        subprocess.call(["echo NameVirtualHost " + PORT + " *:" + PORT + " >> " + APACHE_CONF])
+        subprocess.call(["echo Listen " + PORT + " >> " + APACHE_CONF], shell=True)
+        subprocess.call(["echo NameVirtualHost " + PORT + " *:" + PORT + " >> " + APACHE_CONF], shell=True)
         LOG.write("Configured Apache for Non-Standard Port\n")
 
 
@@ -78,6 +78,7 @@ def change_permissions():
     try:
         subprocess.call(["useradd admin"], shell=True)
         LOG.write("Created user: admin \n")
+        subprocess.call(["chmod -R 2775 " + FULL_DIR], shell=True)
         subprocess.call(["chown -R admin:admin " + BASE_DIR], shell=True)
         subprocess.call(["chown ftp:admin " + FULL_DIR + "ftp"], shell=True)
         LOG.write("Set permissions \n")
