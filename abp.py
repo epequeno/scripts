@@ -15,6 +15,7 @@ import urllib
 
 DOMAIN = raw_input("Enter domain [example.com]: ")
 PORT = raw_input("Enter port [80]: ")
+ADMIN_USER = raw_input("Enter admin user [admin]: ")
 if DOMAIN == '':
     DOMAIN = 'example.com'
 if PORT == '':
@@ -33,7 +34,7 @@ VHOST = ["<VirtualHost *:" + PORT + ">",
          "  ErrorLog " + FULL_DIR + "logs/error-log",
          "  CustomLog " + FULL_DIR + "logs/access-log common",
          "</VirtualHost>"]
-REQUEST = urllib.urlopen("https://raw.githubusercontent.com/h5bp/html5-boilerplate/master/index.html")
+REQUEST = urllib.urlopen("https://raw.githubusercontent.com/h5bp/html5-boilerplate/master/src/index.html")
 HTML5_BOILERPLATE = REQUEST.read()
 LOG = open("abp.log", 'w')
 
@@ -56,7 +57,7 @@ def install_apache():
 def config_apache():
     if PORT != "80":
         subprocess.call(["echo Listen " + PORT + " >> " + APACHE_CONF], shell=True)
-        subprocess.call(["echo NameVirtualHost " + PORT + " *:" + PORT + " >> " + APACHE_CONF], shell=True)
+        subprocess.call(["echo NameVirtualHost *:" + PORT + " >> " + APACHE_CONF], shell=True)
         LOG.write("Configured Apache for Non-Standard Port\n")
 
 
@@ -76,11 +77,11 @@ def make_structure():
 
 def change_permissions():
     try:
-        subprocess.call(["useradd admin"], shell=True)
-        LOG.write("Created user: admin \n")
+        subprocess.call(["useradd " + ADMIN_USER], shell=True)
+        LOG.write("Created user: " + ADMIN_USER + " \n")
         subprocess.call(["chmod -R 2775 " + FULL_DIR], shell=True)
-        subprocess.call(["chown -R admin:admin " + BASE_DIR], shell=True)
-        subprocess.call(["chown ftp:admin " + FULL_DIR + "ftp"], shell=True)
+        subprocess.call(["chown -R " + ADMIN_USER + ":" + ADMIN_USER + BASE_DIR], shell=True)
+        subprocess.call(["chown ftp:" + ADMIN_USER + FULL_DIR + "ftp"], shell=True)
         LOG.write("Set permissions \n")
     except:
         print "Something went wrong while setting permissions"
