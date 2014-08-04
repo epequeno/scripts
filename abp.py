@@ -22,6 +22,7 @@ if PORT == '':
 
 # Global constants
 APACHE_VHOST_DIR = '/etc/httpd/conf.d/'
+APACHE_CONF = '/etc/httpd/conf/httpd.conf'
 BASE_DIR = '/var/www/vhosts/'
 FULL_DIR = BASE_DIR + DOMAIN + '/'
 STRUCTURE = ['admin', 'ftp', 'http', 'https', 'subdomains', 'logs']
@@ -50,6 +51,13 @@ def install_apache():
     subprocess.call(["yum install httpd -y >> abp.log"], shell=True)
     subprocess.call(["chkconfig httpd on"], shell=True)
     LOG.write("Installed Apache\n")
+    
+
+def config_apache():
+    if PORT != "80":
+        subprocess.call(["echo Listen " + PORT + " >> " + APACHE_CONF])
+        subprocess.call(["echo NameVirtualHost " + PORT + " *:" + PORT + " >> " + APACHE_CONF])
+        LOG.write("Configured Apache for Non-Standard Port\n")
 
 
 def make_base_dir():
@@ -121,6 +129,7 @@ def main():
     print "Working, please wait (~2m)...\n"
     test_exists()
     install_apache()
+    config_apache()
     make_base_dir()
     make_structure()
     change_permissions()
