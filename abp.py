@@ -14,16 +14,18 @@ import subprocess
 import urllib
 
 DOMAIN = raw_input("Enter domain [example.com]: ")
-
+PORT = raw_input("Enter port [80]: ")
 if DOMAIN == '':
     DOMAIN = 'example.com'
+if PORT == '':
+    PORT = '80'
 
 # Global constants
 APACHE_VHOST_DIR = '/etc/httpd/conf.d/'
 BASE_DIR = '/var/www/vhosts/'
 FULL_DIR = BASE_DIR + DOMAIN + '/'
 STRUCTURE = ['admin', 'ftp', 'http', 'https', 'subdomains', 'logs']
-VHOST = ["<VirtualHost *:80>",
+VHOST = ["<VirtualHost *:" + PORT + ">",
          "  ServerName " + DOMAIN,
          "  DocumentRoot " + FULL_DIR + "http",
          "  ServerAlias ",
@@ -108,11 +110,11 @@ def start_apache():
     LOG.write("Apache started \n")
 
 
-def open_port_80():
-    subprocess.call(["iptables -I INPUT -m conntrack --ctstate NEW -m tcp -p tcp --dport 80 -j ACCEPT"], shell=True)
+def open_port():
+    subprocess.call(["iptables -I INPUT -m conntrack --ctstate NEW -m tcp -p tcp --dport " + PORT + " -j ACCEPT"], shell=True)
     subprocess.call(["service iptables save >> abp.log"], shell=True)
     subprocess.call(["service iptables restart >> abp.log"], shell=True)
-    LOG.write("Opened port 80\n")
+    LOG.write("Opened port " + PORT + "\n")
 
 
 def main():
@@ -125,7 +127,7 @@ def main():
     make_conf_file()
     make_index_file()
     start_apache()
-    open_port_80()
+    open_port()
     LOG.close()
     print "Done. See abp.log for details."
 
