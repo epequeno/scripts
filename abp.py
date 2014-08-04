@@ -84,8 +84,8 @@ def change_permissions():
         subprocess.call(["useradd " + ADMIN_USER], shell=True)
         LOG.write("Created user: " + ADMIN_USER + " \n")
         subprocess.call(["chmod -R 2775 " + FULL_DIR], shell=True)
-        subprocess.call(["chown -R " + ADMIN_USER + ":" + ADMIN_USER + BASE_DIR], shell=True)
-        subprocess.call(["chown ftp:" + ADMIN_USER + FULL_DIR + "ftp"], shell=True)
+        subprocess.call(["chown -R " + ADMIN_USER + ":" + ADMIN_USER + ' ' + BASE_DIR], shell=True)
+        subprocess.call(["chown ftp:" + ADMIN_USER + ' ' + FULL_DIR + "ftp"], shell=True)
         LOG.write("Set permissions \n")
     except:
         print "Something went wrong while setting permissions"
