@@ -26,6 +26,7 @@ if ADMIN_USER == '':
     ADMIN_USER = 'admin'
 
 # Global constants
+STARTING_DIR = os.getcwd()
 APACHE_VHOST_DIR = '/etc/httpd/conf.d/'
 APACHE_CONF = '/etc/httpd/conf/httpd.conf'
 BASE_DIR = '/var/www/vhosts/'
@@ -77,6 +78,7 @@ def make_structure():
     for directory in STRUCTURE:
         subprocess.call(["mkdir", directory])
     LOG.write("Made default directories (%s) in %s \n" % (STRUCTURE, FULL_DIR))
+    os.chdir(STARTING_DIR)
 
 
 def change_permissions():
