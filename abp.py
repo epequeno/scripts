@@ -16,10 +16,14 @@ import urllib
 DOMAIN = raw_input("Enter domain [example.com]: ")
 PORT = raw_input("Enter port [80]: ")
 ADMIN_USER = raw_input("Enter admin user [admin]: ")
+
+#  Set defaults
 if DOMAIN == '':
     DOMAIN = 'example.com'
 if PORT == '':
     PORT = '80'
+if ADMIN_USER == '':
+    ADMIN_USER = 'admin'
 
 # Global constants
 APACHE_VHOST_DIR = '/etc/httpd/conf.d/'
