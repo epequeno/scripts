@@ -9,9 +9,11 @@ Apache best practices script
 """
 
 import os
-import sys
+import platform
 import subprocess
+import sys
 import urllib
+
 
 DOMAIN = raw_input("Enter domain [example.com]: ")
 PORT = raw_input("Enter port [80]: ")
@@ -42,6 +44,9 @@ VHOST = ["<VirtualHost *:" + PORT + ">",
 REQUEST = urllib.urlopen("https://raw.githubusercontent.com/h5bp/html5-boilerplate/master/src/index.html")
 HTML5_BOILERPLATE = REQUEST.read()
 LOG = open("abp.log", 'w')
+
+# Check Environment
+LOG.write(platform.linux_distribution()[0] + platform.linux_distribution[1])
 
 
 def test_exists():
