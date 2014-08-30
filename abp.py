@@ -35,7 +35,7 @@ STRUCTURE = ['admin', 'ftp', 'http', 'https', 'subdomains', 'logs']
 VHOST = ["<VirtualHost *:" + PORT + ">",
          "  ServerName " + DOMAIN,
          "  DocumentRoot " + FULL_DIR + "http",
-         "  ServerAlias ",
+         "  ServerAlias www." + DOMAIN,
          "  ErrorLog " + FULL_DIR + "logs/error-log",
          "  CustomLog " + FULL_DIR + "logs/access-log common",
          "</VirtualHost>"]
@@ -57,7 +57,7 @@ def install_apache():
     subprocess.call(["yum install httpd -y >> abp.log"], shell=True)
     subprocess.call(["chkconfig httpd on"], shell=True)
     LOG.write("Installed Apache\n")
-    
+
 
 def config_apache():
     if PORT != "80":
