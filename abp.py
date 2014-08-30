@@ -59,10 +59,10 @@ def install_apache():
     LOG.write("Installed Apache\n")
 
 
-def config_apache():
-    if PORT != "80":
-        subprocess.call(["echo Listen " + PORT + " >> " + APACHE_CONF], shell=True)
-        subprocess.call(["echo NameVirtualHost *:" + PORT + " >> " + APACHE_CONF], shell=True)
+def config_apache(port="80"):
+    if port != "80":
+        subprocess.call(["echo Listen " + port + " >> " + APACHE_CONF], shell=True)
+        subprocess.call(["echo NameVirtualHost *:" + port + " >> " + APACHE_CONF], shell=True)
         LOG.write("Configured Apache for Non-Standard Port\n")
 
 
@@ -126,25 +126,25 @@ def start_apache():
     LOG.write("Apache started \n")
 
 
-def open_port():
-    subprocess.call(["iptables -I INPUT -m conntrack --ctstate NEW -m tcp -p tcp --dport " + PORT + " -j ACCEPT"], shell=True)
+def open_port(port="80"):
+    subprocess.call(["iptables -I INPUT -m conntrack --ctstate NEW -m tcp -p tcp --dport " + port + " -j ACCEPT"], shell=True)
     subprocess.call(["service iptables save >> abp.log"], shell=True)
     subprocess.call(["service iptables restart >> abp.log"], shell=True)
-    LOG.write("Opened port " + PORT + "\n")
+    LOG.write("Opened port " + port + "\n")
 
 
 def main():
     print "Working, please wait (~2m)...\n"
     test_exists()
     install_apache()
-    config_apache()
+    config_apache(PORT)
     make_base_dir()
     make_structure()
     change_permissions()
     make_conf_file()
     make_index_file()
     start_apache()
-    open_port()
+    open_port(PORT)
     LOG.close()
     print "Done. See abp.log for details."
 
