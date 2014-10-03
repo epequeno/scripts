@@ -46,8 +46,7 @@ HTML5_BOILERPLATE = REQUEST.read()
 LOG = open("abp.log", 'w')
 
 # Check Environment
-LOG.write(platform.linux_distribution()[0] + platform.linux_distribution[1])
-
+PLATFORM = platform.linux_distribution()[0]
 
 def test_exists():
     '''Tests to make sure we aren't messing with a domain
