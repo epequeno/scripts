@@ -1,3 +1,6 @@
+" Force save files that require root
+cmap w!! %!sudo tee > /dev/null %
+
 " Better color scheme
 set background=dark
 
@@ -20,11 +23,13 @@ syntax enable
 set tabstop=8 
 set shiftwidth=4 
 set softtabstop=4
+:let python_version_2 = 1
 
 " =========================== Maps ======================================
-" Default leader is \
+" remap leader to ,
+let mapleader = ","
 
 " Make basic function definition  (PYTHON)
-:map <Leader>d idef foo():<Return><Tab>
+:map <Leader>d idef foo():<Return>
 
 " =======================================================================
